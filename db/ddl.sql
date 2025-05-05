@@ -212,7 +212,7 @@ CREATE TABLE IF NOT EXISTS public.contacto_emergencia
         REFERENCES public.empleado (id_empleado) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT contacto_emergencia_relacion_check CHECK (relacion::text = ANY (ARRAY['Padre'::character varying, 'Madre'::character varying, 'Hijo/a'::character varying, 'C¢nyuge'::character varying, 'Hermano/a'::character varying, 'Otro'::character varying]::text[]))
+    CONSTRAINT contacto_emergencia_relacion_check CHECK (relacion::text = ANY (ARRAY['Padre'::character varying, 'Madre'::character varying, 'Hijo/a'::character varying, 'Conyuge'::character varying, 'Hermano/a'::character varying, 'Otro'::character varying]::text[]))
 )
 
 TABLESPACE pg_default;
