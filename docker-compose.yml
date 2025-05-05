@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:15
+    container_name: postgres_container
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: HospitalPersonalDB
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+  backend:
+    build: .
+    container_name: backend_container
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: 12345
+      DB_NAME: HospitalPersonalDB
+    volumes:
+      - ./backend/reportes:/app/reportes
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
