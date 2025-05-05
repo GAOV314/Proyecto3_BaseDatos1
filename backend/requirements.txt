@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+pandas
+matplotlib
+fpdf
+psycopg2-binary
+openpyxl
