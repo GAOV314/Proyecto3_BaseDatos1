@@ -68,11 +68,12 @@ docker-compose down
 
 ## 🗂️ Estructura del Proyecto
 ```
-hospital-personal-management/
+Proyecto3_BaseDatos1/
 ├── docker-compose.yml      # Configuración de contenedores
 ├── Dockerfile              # Definición del entorno FastAPI
-├── ddl.sql                 # Script para crear tablas
-├── dml.sql                 # Datos iniciales
+├── db/
+│   ├── ddl.sql             # Script para crear tablas
+│   └── dml.sql             # Datos iniciales
 ├── backend/
 │   ├── app.py              # Código principal de FastAPI
 │   ├── requirements.txt    # Dependencias de Python
@@ -88,17 +89,9 @@ hospital-personal-management/
 
 ---
 
-## 📄 Licencia
-Este proyecto está bajo la [Licencia MIT](LICENSE).  
-Copyright © 2025 [Tu Nombre]
-
----
-
 ### 💡 Notas
 - **No incluyas la carpeta `venv` en el repositorio**. Usa Docker para gestionar dependencias.
 - Los archivos generados (CSV/PDF) se guardan en la carpeta `backend/reportes/`.
 - Asegúrate de tener permisos para ejecutar Docker.
 
 ---
-
-Con este README, cualquier persona podrá entender tu proyecto, instalarlo y usarlo sin problemas. ¡Perfecto para compartir en GitHub! 🚀
