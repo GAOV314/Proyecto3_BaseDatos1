@@ -5,20 +5,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from fpdf import FPDF
 import os
-from fastapi.middleware.cors import CORSMiddleware
 
-from fastapi.staticfiles import StaticFiles
 app = FastAPI()
-
-app.mount("/static", StaticFiles(directory="reportes"), name="static")
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # En producción restringir a tu dominio
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 
 # Configuración
 DB_PARAMS = {
@@ -68,7 +56,7 @@ def exportar_reportes(df, nombre_base):
     return zip_path
 
 # ===============================
-# ENDPOINTS PARA MOSTRAR DATOS (JSON)
+# ENDPOINTS PARA MOSTRAR REPORTES (JSON)
 # ===============================
 
 @app.get("/api/empleados-departamento")
@@ -168,112 +156,6 @@ def obtener_licencias_por_tipo(year: int = 2023):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# ===============================
-# ENDPOINTS PARA EXPORTAR DATOS (CSV/Excel/PDF/ZIP)
-# ===============================
-
-@app.get("/api/exportar/empleados-departamento")
-def exportar_empleados_departamento():
-    try:
-        engine = obtener_engine()
-        query = '''
-        SELECT d.nombre_departamento AS nombre_departamento, 
-               COUNT(e.id_empleado) AS total_empleados
-        FROM departamento d
-        LEFT JOIN empleado e ON d.id_departamento = e.id_departamento
-        GROUP BY d.nombre_departamento
-        ORDER BY total_empleados DESC;
-        '''
-        df = pd.read_sql(query, engine)
-        zip_path = exportar_reportes(df, 'empleados_departamento')
-        return {"download_url": f"/static/{os.path.basename(zip_path)}"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/api/exportar/salario-promedio")
-def exportar_salario_promedio():
-    try:
-        engine = obtener_engine()
-        query = '''
-        SELECT p.nombre_puesto AS nombre_puesto, 
-               ROUND((p.salario_min + p.salario_max) / 2, 2) AS salario_promedio
-        FROM puesto p
-        ORDER BY salario_promedio DESC;
-        '''
-        df = pd.read_sql(query, engine)
-        zip_path = exportar_reportes(df, 'salario_puesto')
-        return {"download_url": f"/static/{os.path.basename(zip_path)}"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/api/exportar/distribucion-genero")
-def exportar_distribucion_genero():
-    try:
-        engine = obtener_engine()
-        query = '''
-        SELECT e.genero, COUNT(*) AS cantidad
-        FROM empleado e
-        GROUP BY e.genero;
-        '''
-        df = pd.read_sql(query, engine)
-        zip_path = exportar_reportes(df, 'genero')
-        return {"download_url": f"/static/{os.path.basename(zip_path)}"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/api/exportar/empleados-riesgo-laboral")
-def exportar_empleados_riesgo():
-    try:
-        engine = obtener_engine()
-        query = '''
-        SELECT p.riesgo_laboral AS riesgo_laboral, COUNT(e.id_empleado) AS cantidad
-        FROM empleado e
-        JOIN puesto p ON e.id_puesto = p.id_puesto
-        GROUP BY p.riesgo_laboral
-        ORDER BY cantidad DESC;
-        '''
-        df = pd.read_sql(query, engine)
-        zip_path = exportar_reportes(df, 'riesgo_laboral')
-        return {"download_url": f"/static/{os.path.basename(zip_path)}"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/api/exportar/presupuesto-vs-empleados")
-def exportar_presupuesto_vs_empleados():
-    try:
-        engine = obtener_engine()
-        query = '''
-        SELECT d.nombre_departamento AS nombre_departamento, 
-               d.presupuesto_anual, 
-               COUNT(e.id_empleado) AS total_empleados
-        FROM departamento d
-        LEFT JOIN empleado e ON d.id_departamento = e.id_departamento
-        GROUP BY d.nombre_departamento, d.presupuesto_anual;
-        '''
-        df = pd.read_sql(query, engine)
-        zip_path = exportar_reportes(df, 'presupuesto_vs_empleados')
-        return {"download_url": f"/static/{os.path.basename(zip_path)}"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/api/exportar/licencias-por-tipo")
-def exportar_licencias_por_tipo(year: int = 2023):
-    try:
-        engine = obtener_engine()
-        query = f'''
-        SELECT 
-            l.tipo_licencia,
-            COUNT(*) AS cantidad
-        FROM licencia l
-        WHERE l.fecha_inicio BETWEEN '{year}-01-01' AND '{year}-12-31'
-        GROUP BY l.tipo_licencia
-        ORDER BY cantidad DESC;
-        '''
-        df = pd.read_sql(query, engine)
-        zip_path = exportar_reportes(df, f'licencias_tipo_{year}')
-        return {"download_url": f"/static/{os.path.basename(zip_path)}"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
 # ===============================
 # ENDPOINT DE VERIFICACIÓN
