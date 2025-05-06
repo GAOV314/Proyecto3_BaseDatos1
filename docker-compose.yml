@@ -1,3 +1,5 @@
+version: '3.9'
+
 services:
   db:
     image: postgres:15
@@ -14,7 +16,8 @@ services:
       - app-network
 
   backend:
-    build: .
+    build: 
+      context: ./backend
     container_name: backend_container
     depends_on:
       - db
@@ -28,6 +31,21 @@ services:
       - ./backend/reportes:/app/reportes
     ports:
       - "8000:8000"
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules    
+    command: [ "bun", "run", "dev" ]
+    depends_on:
+      - backend
     networks:
       - app-network
 

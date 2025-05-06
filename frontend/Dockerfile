@@ -1,18 +1,17 @@
-# Dockerfile del frontend (./frontend/Dockerfile)
-FROM oven/bun:1.1.5-slim AS builder
+# Usa la imagen oficial de Bun
+FROM oven/bun:1
 
+# Establece el directorio de trabajo
 WORKDIR /app
-COPY package.json .
-RUN bun install --frozen-lockfile
 
+# Copia los archivos del proyecto
 COPY . .
-RUN bun run build
 
-FROM oven/bun:1.1.5-slim
-WORKDIR /app
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-COPY package.json .
+# Instala las dependencias
+RUN bun install
 
-EXPOSE 3000
-CMD ["bun", "run", "preview"]
+# Expone el puerto por defecto de Vite
+EXPOSE 5173
+
+# Usa bun para correr el servidor de desarrollo
+CMD ["bun", "run", "dev"]

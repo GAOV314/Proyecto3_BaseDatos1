@@ -5,9 +5,9 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Copy requirements and source code
-COPY backend/requirements.txt /app/
+COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
-COPY backend/ /app/
+COPY . /app/
 
 # Create folder for reports
 RUN mkdir -p /app/reportes

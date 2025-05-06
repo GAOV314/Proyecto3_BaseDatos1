@@ -5,8 +5,20 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from fpdf import FPDF
 import os
+from fastapi.middleware.cors import CORSMiddleware
 
+from fastapi.staticfiles import StaticFiles
 app = FastAPI()
+
+app.mount("/static", StaticFiles(directory="reportes"), name="static")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # En producción restringir a tu dominio
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # Configuración
 DB_PARAMS = {
